@@ -9,13 +9,6 @@ app.set("views", "./views");
 app.set("view engine", "ejs");
 
 app.use(express.json());
-app.use(express.urlencoded());
-app.get('/register', (req, res) => {
-    res.render("register");
-})
-app.get("/", (req, res) => {
-    res.render("initial");
-})
 app.post("/register", async(req, res) => {
         const { first_name, last_name, email, password } = req.body;
         if (!(email && password && first_name && last_name)) {
@@ -39,14 +32,14 @@ app.post("/register", async(req, res) => {
                 }
             );
             user.token = token;
-            res.cookie("access_token", token, {
-                httpOnly: true
-            })
-
-            res.redirect("http://localhost:3000/welcome");
+            return res.cookie("access_token", token, {
+                    httpOnly: true
+                })
+                .status(200)
+                .json({ message: "registered in successfully" });
 
         } catch {
-            res.render("login");
+            res.send("user with this email already exist...please login");
 
         }
     }
@@ -54,23 +47,22 @@ app.post("/register", async(req, res) => {
 
 );
 app.get("/logout", (req, res) => {
-    res.clearCookie("access_token");
-    console.log("successfully logged out");
-    res.render("login");
+    return res
+        .clearCookie("access_token")
+        .status(200)
+        .json({ message: "Successfully logged out " });
 });
 app.get("/login", (req, res) => {
     res.render("login");
 })
 app.post("/login", async(req, res) => {
-    console.log(req);
-    const { email, pwd } = req.body;
-    console.log(email + " " + pwd);
-    if (!(email && pwd)) {
-        res.send("All fields are  required");
+    const { email, password } = req.body;
+    if (!(email && password)) {
+        res.status(400).send("All fields are  required");
     }
     const user = await User.findOne({ email });
 
-    if (user && (await bcrypt.compare(pwd, user.password))) {
+    if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign({ user_id: user._id, email },
             process.env.TOKEN_KEY, {
                 expiresIn: "2h",
@@ -82,11 +74,8 @@ app.post("/login", async(req, res) => {
             httpOnly: true
         });
         res.redirect("http://localhost:3000/welcome");
-    } else {
-
-        console.log("invalid credentials");
-        res.render("login");
-    }
+    } else
+        res.send("Invalid Credentials");
 })
 
 

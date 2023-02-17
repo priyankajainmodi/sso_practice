@@ -83,8 +83,6 @@ app.post("/login", async(req, res) => {
         });
         res.redirect("http://localhost:3000/welcome");
     } else {
-
-        console.log("invalid credentials");
         res.render("login");
     }
 })

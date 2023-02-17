@@ -13,7 +13,7 @@ app.use(express.urlencoded());
 app.get('/register', (req, res) => {
     res.render("register");
 })
-app.get("/", (req, res) => {
+app.get("/", auth, (req, res) => {
     res.render("initial");
 })
 app.post("/register", async(req, res) => {
@@ -54,9 +54,10 @@ app.post("/register", async(req, res) => {
 
 );
 app.get("/logout", (req, res) => {
-    res.clearCookie("access_token");
-    console.log("successfully logged out");
-    res.render("login");
+    return res
+        .clearCookie("access_token")
+        .status(200)
+        .json({ message: "Successfully logged out " });
 });
 app.get("/login", (req, res) => {
     res.render("login");
@@ -83,8 +84,6 @@ app.post("/login", async(req, res) => {
         });
         res.redirect("http://localhost:3000/welcome");
     } else {
-
-        console.log("invalid credentials");
         res.render("login");
     }
 })

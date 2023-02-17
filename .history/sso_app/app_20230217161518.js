@@ -10,12 +10,15 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 app.use(cookieParser());
 app.get("/welcome", auth, (req, res) => {
-    res.render("welcome");
+    const id = req._id;
+    const mail = req.email;
+    res.json({ userId: id, email: mail });
 });
 app.get("/logout", auth, (req, res) => {
-    res.clearCookie("access_token");
-    console.log("successfully logged out");
-    res.render("home");
+    return res
+        .clearCookie("access_token")
+        .status(200)
+        .json({ message: "Successfully logged out " });
 });
 app.get("/", (req, res) => {
     res.render("home");

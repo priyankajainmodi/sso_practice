@@ -13,9 +13,6 @@ app.use(express.urlencoded());
 app.get('/register', (req, res) => {
     res.render("register");
 })
-app.get("/", (req, res) => {
-    res.render("initial");
-})
 app.post("/register", async(req, res) => {
         const { first_name, last_name, email, password } = req.body;
         if (!(email && password && first_name && last_name)) {
@@ -39,11 +36,11 @@ app.post("/register", async(req, res) => {
                 }
             );
             user.token = token;
-            res.cookie("access_token", token, {
-                httpOnly: true
-            })
-
-            res.redirect("http://localhost:3000/welcome");
+            return res.cookie("access_token", token, {
+                    httpOnly: true
+                })
+                .status(200)
+                .json({ message: "registered in successfully" });
 
         } catch {
             res.render("login");
@@ -54,9 +51,10 @@ app.post("/register", async(req, res) => {
 
 );
 app.get("/logout", (req, res) => {
-    res.clearCookie("access_token");
-    console.log("successfully logged out");
-    res.render("login");
+    return res
+        .clearCookie("access_token")
+        .status(200)
+        .json({ message: "Successfully logged out " });
 });
 app.get("/login", (req, res) => {
     res.render("login");
@@ -82,10 +80,6 @@ app.post("/login", async(req, res) => {
             httpOnly: true
         });
         res.redirect("http://localhost:3000/welcome");
-    } else {
-
-        console.log("invalid credentials");
-        res.render("login");
     }
 })
 

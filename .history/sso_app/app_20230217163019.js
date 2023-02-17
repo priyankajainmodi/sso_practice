@@ -13,9 +13,10 @@ app.get("/welcome", auth, (req, res) => {
     res.render("welcome");
 });
 app.get("/logout", auth, (req, res) => {
-    res.clearCookie("access_token");
-    console.log("successfully logged out");
-    res.render("home");
+    return res
+        .clearCookie("access_token")
+        .status(200)
+        .json({ message: "Successfully logged out " });
 });
 app.get("/", (req, res) => {
     res.render("home");

@@ -15,7 +15,7 @@ app.get("/welcome", auth, (req, res) => {
 app.get("/logout", auth, (req, res) => {
     res.clearCookie("access_token");
     console.log("successfully logged out");
-    res.render("home");
+    res.redirect("home");
 });
 app.get("/", (req, res) => {
     res.render("home");
